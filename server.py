@@ -1,6 +1,5 @@
 """
 Salaam MCP Server — Entry Point
-Run with: python server.py
 """
 
 import argparse
@@ -19,96 +18,92 @@ from salaam.resources import register_all_resources
 from salaam.tools import register_all_tools
 
 
-# Create the MCP server instance
+# ---------------------------------------------------------
+# MCP SERVER
+# ---------------------------------------------------------
+
 mcp = FastMCP(
     name=config.SERVER_NAME,
     instructions=SERVER_INSTRUCTIONS,
 )
 
 
-# Register tools, prompts, and resources
+# ---------------------------------------------------------
+# REGISTER SALAAM COMPONENTS
+# ---------------------------------------------------------
+
 register_all_tools(mcp)
 register_all_prompts(mcp)
 register_all_resources(mcp)
 
 
-def main(argv: list[str] | None = None) -> None:
-    """Run the Salaam MCP server."""
+# ---------------------------------------------------------
+# MAIN
+# ---------------------------------------------------------
 
+def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         description="Salaam MCP server"
     )
 
     parser.add_argument(
         "--transport",
-        default=os.getenv("MCP_TRANSPORT", "sse"),
+        default=os.getenv("MCP_TRANSPORT", "http"),
         choices=[
+            "http",
+            "streamable-http",
             "sse",
             "stdio",
-            "streamable-http",
         ],
-        help=(
-            "Transport to use. "
-            "'sse' for the existing voice agent, "
-            "'stdio' for local desktop clients, "
-            "'streamable-http' for modern HTTP deployments."
-        ),
     )
 
     args = parser.parse_args(argv)
 
-    # Reduce noisy httpx logs in production.
+    # Keep noisy HTTP logs under control in production.
     if not config.DEBUG:
         logging.getLogger("httpx").setLevel(logging.WARNING)
 
-    # ---------------------------------------------------------
-    # WEB / RENDER DEPLOYMENT
-    # ---------------------------------------------------------
-    if args.transport == "sse":
-        host = os.getenv("MCP_HOST", "0.0.0.0")
+    # -----------------------------------------------------
+    # RENDER / HTTP DEPLOYMENT
+    # -----------------------------------------------------
 
-        # Render provides PORT automatically.
-        port = int(os.getenv("PORT", "8000"))
-
-        print(
-            f"Salaam MCP server starting on "
-            f"http://{host}:{port}/sse",
-            flush=True,
-        )
-
-        mcp.run(
-            transport="sse",
-            host=host,
-            port=port,
-        )
-
-    # ---------------------------------------------------------
-    # MODERN HTTP DEPLOYMENT
-    # ---------------------------------------------------------
-    elif args.transport == "streamable-http":
-        host = os.getenv("MCP_HOST", "0.0.0.0")
-        port = int(os.getenv("PORT", "8000"))
+    if args.transport in ("http", "streamable-http", "sse"):
+        host = "0.0.0.0"
+        port = int(os.getenv("PORT", "10000"))
 
         print(
             f"Salaam MCP server starting on "
-            f"http://{host}:{port}/mcp",
+            f"{host}:{port}",
             flush=True,
         )
 
-        mcp.run(
-            transport="streamable-http",
-            host=host,
-            port=port,
-        )
+        if args.transport == "sse":
+            mcp.run(
+                transport="sse",
+                host=host,
+                port=port,
+            )
 
-    # ---------------------------------------------------------
+        else:
+            mcp.run(
+                transport="http",
+                host=host,
+                port=port,
+            )
+
+    # -----------------------------------------------------
     # LOCAL / CLAUDE DESKTOP
-    # ---------------------------------------------------------
+    # -----------------------------------------------------
+
     else:
         mcp.run(
             transport="stdio",
         )
 
+
+# ---------------------------------------------------------
+# ENTRY POINT
+# ---------------------------------------------------------
 
 if __name__ == "__main__":
     main()
