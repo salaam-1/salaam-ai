@@ -49,8 +49,8 @@ def main(argv: list[str] | None = None) -> None:
         logging.getLogger("httpx").setLevel(logging.WARNING)
 
     if args.transport == "sse":
-        host = os.getenv("MCP_HOST", "127.0.0.1")
-        port = os.getenv("MCP_PORT", "8000")
+        host = os.getenv("MCP_HOST", "0.0.0.0")
+        port = os.getenv("PORT", os.getenv("MCP_PORT", "8000"))
         print(f"Salaam MCP server starting on http://{host}:{port}/sse")
 
     mcp.run(transport=args.transport)
