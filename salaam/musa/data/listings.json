@@ -1,0 +1,97 @@
+[
+  {
+    "id": "iphone-14-pro-256",
+    "business_id": "demo",
+    "title": "iPhone 14 Pro 256GB",
+    "category": "phones",
+    "price": 980000,
+    "price_currency": "NGN",
+    "description": "UK-used iPhone 14 Pro with Face ID and clean battery health.",
+    "availability": "in_stock",
+    "attributes": {
+      "condition": "UK-used",
+      "storage": "256GB",
+      "color": "Deep Purple",
+      "battery_health": "89%"
+    },
+    "media_urls": [
+      "https://example.com/musa/iphone-14-pro-256.jpg"
+    ],
+    "is_active": true
+  },
+  {
+    "id": "samsung-s23-ultra-512",
+    "business_id": "demo",
+    "title": "Samsung Galaxy S23 Ultra 512GB",
+    "category": "phones",
+    "price": 870000,
+    "price_currency": "NGN",
+    "description": "Clean Samsung Galaxy S23 Ultra with S Pen and dual SIM support.",
+    "availability": "limited",
+    "attributes": {
+      "condition": "UK-used",
+      "storage": "512GB",
+      "color": "Phantom Black"
+    },
+    "media_urls": [
+      "https://example.com/musa/samsung-s23-ultra-512.jpg"
+    ],
+    "is_active": true
+  },
+  {
+    "id": "macbook-air-m2-2022",
+    "business_id": "demo",
+    "title": "MacBook Air M2 2022",
+    "category": "laptops",
+    "price": 1250000,
+    "price_currency": "NGN",
+    "description": "MacBook Air M2 with 8GB RAM and 256GB SSD.",
+    "availability": "in_stock",
+    "attributes": {
+      "condition": "Open box",
+      "memory": "8GB",
+      "storage": "256GB SSD",
+      "color": "Midnight"
+    },
+    "media_urls": [
+      "https://example.com/musa/macbook-air-m2-2022.jpg"
+    ],
+    "is_active": true
+  },
+  {
+    "id": "airpods-pro-2",
+    "business_id": "demo",
+    "title": "AirPods Pro 2",
+    "category": "accessories",
+    "price": 185000,
+    "price_currency": "NGN",
+    "description": "Original AirPods Pro 2 with MagSafe charging case.",
+    "availability": "in_stock",
+    "attributes": {
+      "condition": "Brand new",
+      "warranty": "7 days store warranty"
+    },
+    "media_urls": [
+      "https://example.com/musa/airpods-pro-2.jpg"
+    ],
+    "is_active": true
+  },
+  {
+    "id": "oraimo-power-bank-20000",
+    "business_id": "demo",
+    "title": "Oraimo 20000mAh Power Bank",
+    "category": "accessories",
+    "price": 28000,
+    "price_currency": "NGN",
+    "description": "Oraimo fast-charge power bank with dual USB output.",
+    "availability": "out_of_stock",
+    "attributes": {
+      "capacity": "20000mAh",
+      "color": "Black"
+    },
+    "media_urls": [
+      "https://example.com/musa/oraimo-power-bank-20000.jpg"
+    ],
+    "is_active": true
+  }
+]

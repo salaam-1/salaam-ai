@@ -1,0 +1,20 @@
+[
+  {
+    "id": "demo",
+    "name": "Musa Demo Gadgets",
+    "whatsapp_number": "+2348012345678",
+    "owner_whatsapp": "+2348098765432",
+    "location": "Admiralty Way, Lekki Phase 1, Lagos",
+    "working_hours": {
+      "mon": "9:00 AM - 6:00 PM",
+      "tue": "9:00 AM - 6:00 PM",
+      "wed": "9:00 AM - 6:00 PM",
+      "thu": "9:00 AM - 6:00 PM",
+      "fri": "9:00 AM - 6:00 PM",
+      "sat": "10:00 AM - 4:00 PM",
+      "sun": "Closed"
+    },
+    "delivery_rules": "Same-day delivery is available within Lagos for orders confirmed before 2:00 PM. Nationwide dispatch takes 2 to 4 business days.",
+    "currency": "NGN"
+  }
+]

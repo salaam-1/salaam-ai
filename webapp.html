@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Salaam</title>
+<style>
+:root{
+  /* Obsidian & Gold — warm near-black, burnished gold, deep emerald.
+     Everything sits on a warm base (brown/olive undertone, never blue), which
+     is what separates "expensive" from "generic dark mode". */
+  --bg:#0a0806; --bg2:#14110c;
+  --glass:rgba(240,198,116,.045); --glass-2:rgba(240,198,116,.08);
+  --line:rgba(212,162,76,.16);
+  --ink:#f5efe6; --muted:#a1937d;
+  --gold:#d4a24c; --gold-lt:#f0c674; --emerald:#10796b; --jade:#34d399;
+  /* Terracotta for warnings. Lifted from #c0562f, which only hit 4.39:1 on
+     this base — the "thinly sourced" verdict is the one thing that must never
+     be hard to read. #e07a4f clears AA at 6.73:1. */
+  --amber:#e07a4f; --rose:#e07a4f; --amber-deep:#c0562f;
+  --r:18px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);overflow-x:hidden;
+  font:15px/1.65 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+/* ── ambient background ── */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.aurora{position:fixed;inset:-30%;z-index:0;pointer-events:none;filter:blur(90px);opacity:.5}
+.blob{position:absolute;border-radius:50%;mix-blend-mode:screen;animation:drift 26s ease-in-out infinite}
+.b1{width:46vw;height:46vw;left:2%;top:4%;background:radial-gradient(circle,#8a6520,transparent 66%)}
+.b2{width:40vw;height:40vw;right:4%;top:22%;background:radial-gradient(circle,#0d5f54,transparent 66%);animation-delay:-9s}
+.b3{width:36vw;height:36vw;left:32%;bottom:2%;background:radial-gradient(circle,#7a3418,transparent 66%);animation-delay:-17s}
+@keyframes drift{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(6vw,-4vh) scale(1.12)}
+  66%{transform:translate(-5vw,5vh) scale(.92)}
+}
+.grid-fade{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.16;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:54px 54px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 40%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 40%,transparent 100%);
+}
+.shell{position:relative;z-index:2;max-width:1140px;margin:0 auto;padding:0 22px 60px}
+
+/* ── header ── */
+header{display:flex;align-items:center;gap:16px;padding:26px 0 20px;flex-wrap:wrap}
+/* The infinity mark. Drawn as a stroked lemniscate so it can be animated —
+   the dash offset makes the line trace itself endlessly, which is the whole
+   point of the symbol. */
+.mark{width:62px;height:32px;flex:none;overflow:visible}
+.mark path{
+  fill:none;stroke:url(#markGrad);stroke-width:7;stroke-linecap:round;
+  filter:drop-shadow(0 0 7px rgba(212,162,76,.6));
+  stroke-dasharray:120 300;animation:trace 6s linear infinite;
+}
+@keyframes trace{to{stroke-dashoffset:-420}}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.92}50%{transform:scale(1.07);opacity:1}}
+h1{margin:0;font-size:25px;font-weight:650;letter-spacing:-.03em}
+h1 em{
+  font-style:normal;
+  background:linear-gradient(92deg,var(--gold-lt),var(--gold) 45%,var(--jade));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  background-size:220% auto;animation:flow 7s linear infinite;
+}
+@keyframes flow{to{background-position:220% center}}
+.tagline{color:var(--muted);font-size:13px;letter-spacing:.02em}
+.tabs{margin-left:auto;display:flex;gap:6px;padding:5px;border-radius:999px;
+      background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(14px)}
+.tab{border:0;background:transparent;color:var(--muted);font:inherit;font-size:14px;
+     padding:8px 20px;border-radius:999px;cursor:pointer;transition:.28s}
+.tab[aria-selected=true]{background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#0a0806;font-weight:650}
+
+/* ── panels ── */
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:var(--r);
+       backdrop-filter:blur(18px);animation:rise .5s cubic-bezier(.22,1,.36,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:12px;margin-bottom:16px}
+.card{padding:15px 16px;border-radius:14px;border:1px solid var(--line);background:var(--glass);
+      color:var(--ink);text-align:left;font:inherit;cursor:pointer;position:relative;overflow:hidden;
+      transition:transform .22s cubic-bezier(.22,1,.36,1),border-color .22s,box-shadow .22s}
+.card::before{content:"";position:absolute;inset:0;opacity:0;transition:.28s;
+  background:linear-gradient(135deg,rgba(212,162,76,.15),rgba(16,121,107,.12))}
+.card:hover{transform:translateY(-3px);border-color:rgba(212,162,76,.55);
+            box-shadow:0 12px 34px -12px rgba(212,162,76,.55)}
+.card:hover::before{opacity:1}
+.card b,.card small{position:relative;z-index:1;display:block}
+.card b{font-size:14.5px;font-weight:600}
+.card small{color:var(--muted);font-size:12px;margin-top:2px}
+.bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+input[type=text]{flex:1;min-width:250px;padding:14px 18px;border-radius:14px;border:1px solid var(--line);
+  background:rgba(240,198,116,.05);color:var(--ink);font:inherit;transition:.25s}
+input[type=text]::placeholder{color:#8a7d6a}
+input[type=text]:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 4px rgba(212,162,76,.16)}
+.go{padding:14px 26px;border-radius:14px;border:0;cursor:pointer;font:inherit;font-weight:650;
+  background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#0a0806;
+  transition:transform .2s,box-shadow .25s,filter .2s}
+.go:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 32px -10px rgba(212,162,76,.5)}
+.go:disabled{opacity:.45;cursor:default}
+.go.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.go.stop{background:linear-gradient(135deg,var(--amber-deep),#8f3d1f);color:#fff}
+
+/* ── output ── */
+.out{padding:24px 26px;min-height:210px;overflow-x:auto}
+.out h3{margin:22px 0 10px;font-size:12px;font-weight:650;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.out h3:first-child{margin-top:0}
+.out a{color:var(--gold);text-decoration:none;word-break:break-all;border-bottom:1px solid rgba(212,162,76,.35)}
+.out a:hover{color:var(--jade)}
+.meta{color:var(--muted);font-size:12.5px;font-style:italic}
+.item{padding:13px 0;border-bottom:1px solid var(--line);animation:rise .45s both}
+.item:last-child{border-bottom:0}
+.verdict{padding:13px 17px;border-radius:13px;margin:12px 0;font-weight:600;
+  border-left:3px solid;animation:rise .45s both}
+.v-good{background:rgba(52,211,153,.12);border-color:var(--jade);color:var(--jade)}
+.v-warn{background:rgba(240,198,116,.12);border-color:var(--gold-lt);color:var(--gold-lt)}
+.v-bad{background:rgba(224,122,79,.13);border-color:var(--rose);color:var(--rose)}
+.muted{color:var(--muted)}
+.dots span{display:inline-block;width:7px;height:7px;margin-right:5px;border-radius:50%;
+  background:var(--gold);animation:bounce 1.3s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:.18s;background:var(--gold-lt)}
+.dots span:nth-child(3){animation-delay:.36s;background:var(--jade)}
+@keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-8px);opacity:1}}
+
+/* ── voice stage ── */
+.stage{display:flex;flex-direction:column;align-items:center;padding:26px 20px 34px}
+#orb{width:min(460px,86vw);height:min(460px,86vw);display:block;cursor:pointer}
+.vstate{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+        margin-top:2px;height:18px;transition:color .3s}
+.vstate.live{color:var(--gold)}
+/* Salaam speaking shifts to jade, matching the orb — gold vs gold-light was
+   too close to read as a state change at a glance. */
+.vstate.speak{color:var(--jade)}
+.vstate.err{color:var(--rose)}
+.caption{margin-top:16px;min-height:56px;max-width:660px;text-align:center;font-size:19px;
+  line-height:1.5;color:var(--ink);opacity:0;transition:opacity .35s}
+.caption.on{opacity:1}
+.caption .who{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:5px}
+.hidden{display:none!important}
+/* connection checklist — turns a silent failure into a legible one */
+.checks{width:100%;max-width:660px;margin-top:20px;display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px 18px}
+.chk{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted);
+     animation:rise .35s both}
+.chk i{width:8px;height:8px;border-radius:50%;flex:none;background:#4a423a;transition:.3s}
+.chk.wait i{background:var(--gold);animation:bounce 1.1s ease-in-out infinite}
+.chk.ok i{background:var(--jade);box-shadow:0 0 9px var(--jade)}
+.chk.bad i{background:var(--rose);box-shadow:0 0 9px var(--rose)}
+.chk.ok{color:var(--ink)} .chk.bad{color:var(--rose)}
+.log{font-size:12.5px;color:var(--muted);max-height:150px;overflow:auto;width:100%;
+     max-width:660px;margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+.log div{padding:2px 0;animation:rise .3s both}
+footer{text-align:center;color:#5a687f;font-size:12px;padding:30px 0 10px}
+@media(max-width:720px){.tabs{margin-left:0;width:100%}h1{font-size:22px}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="aurora"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="grid-fade"></div>
+
+<div class="shell">
+  <header>
+    <svg class="mark" viewBox="0 0 120 60" aria-label="Salaam">
+      <defs>
+        <linearGradient id="markGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stop-color="#f0c674"/>
+          <stop offset="50%"  stop-color="#d4a24c"/>
+          <stop offset="100%" stop-color="#34d399"/>
+        </linearGradient>
+      </defs>
+      <path d="M60 30 C60 12 47 8 36 8 C22 8 12 18 12 30 C12 42 22 52 36 52
+               C47 52 60 48 60 30 C60 12 73 8 84 8 C98 8 108 18 108 30
+               C108 42 98 52 84 52 C73 52 60 48 60 30 Z"/>
+    </svg>
+    <div>
+      <h1>Sal<em>aam</em></h1>
+      <div class="tagline" id="tagline">initialising…</div>
+    </div>
+    <div class="tabs">
+      <button class="tab" aria-selected="true"  data-tab="voice">Voice</button>
+      <button class="tab" aria-selected="false" data-tab="console">Console</button>
+    </div>
+  </header>
+
+  <!-- ══ VOICE ══ -->
+  <section id="tab-voice">
+    <div class="panel stage">
+      <canvas id="orb"></canvas>
+      <div class="vstate" id="vstate">tap the orb to begin</div>
+      <div class="caption" id="caption"></div>
+      <div class="bar" style="margin-top:22px;justify-content:center">
+        <button class="go" id="vgo">Start talking</button>
+        <button class="go stop hidden" id="vstop">End</button>
+      </div>
+      <div id="checks" class="checks hidden"></div>
+      <div class="log" id="vlog"></div>
+    </div>
+  </section>
+
+  <!-- ══ CONSOLE ══ -->
+  <section id="tab-console" class="hidden">
+    <div class="grid" id="quick"></div>
+    <div class="bar">
+      <input type="text" id="wx" placeholder="Weather anywhere — Minna, Bida, Abuja, London, Tokyo…">
+      <button class="go" id="wxgo">Weather</button>
+    </div>
+    <div class="bar">
+      <input type="text" id="q" placeholder="Ask anything — “is it true that…”, “latest on the naira”, “what's big today”">
+      <button class="go" id="run">Run</button>
+    </div>
+    <div class="panel out" id="out"><span class="muted">Pick a card above, or type a question.</span></div>
+  </section>
+</div>
+
+<footer>Running locally · news, verification, weather, markets &amp; memory on free public sources</footer>
+<div id="sink" style="position:absolute;width:0;height:0;overflow:hidden"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/livekit-client@2/dist/livekit-client.umd.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const DPR=()=>Math.min(devicePixelRatio||1,2);
+
+/* ══════════ ambient starfield ══════════ */
+(function(){
+  const c=$('#bg'),x=c.getContext('2d');let w,h,pts;
+  function size(){
+    w=c.width=innerWidth*DPR(); h=c.height=innerHeight*DPR();
+    c.style.width=innerWidth+'px'; c.style.height=innerHeight+'px';
+    pts=Array.from({length:Math.floor(innerWidth/13)},()=>({
+      x:Math.random()*w,y:Math.random()*h,
+      vx:(Math.random()-.5)*.16*DPR(),vy:(Math.random()-.5)*.16*DPR(),
+      r:(Math.random()*1.5+.4)*DPR()
+    }));
+  }
+  size(); addEventListener('resize',size);
+  (function loop(){
+    x.clearRect(0,0,w,h);
+    for(const p of pts){
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>w)p.vx*=-1; if(p.y<0||p.y>h)p.vy*=-1;
+      x.beginPath(); x.arc(p.x,p.y,p.r,0,7);
+      x.fillStyle='rgba(226,190,130,.55)'; x.fill();
+    }
+    // link nearby points into a faint constellation
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=dx*dx+dy*dy;
+      const max=(125*DPR())**2;
+      if(d<max){
+        x.beginPath(); x.moveTo(pts[i].x,pts[i].y); x.lineTo(pts[j].x,pts[j].y);
+        x.strokeStyle='rgba(190,150,80,'+(.13*(1-d/max))+')'; x.lineWidth=DPR()*.6; x.stroke();
+      }
+    }
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* ══════════ the orb ══════════
+   Renders three deforming rings driven by real audio amplitude.
+   mode: idle | listening (user speaking) | speaking (Salaam speaking)      */
+const Orb=(function(){
+  const c=$('#orb'),x=c.getContext('2d');
+  let w,h,cx,cy,base,t=0,mode='idle',level=0,target=0;
+  function size(){
+    const css=c.clientWidth||420;
+    w=c.width=css*DPR(); h=c.height=css*DPR();
+    cx=w/2; cy=h/2; base=Math.min(w,h)*.26;
+  }
+  new ResizeObserver(size).observe(c); size();
+
+  const PALETTE={
+    idle:     ['#d4a24c','#10796b','#f0c674'],
+    listening:['#f0c674','#d4a24c','#34d399'],
+    speaking: ['#34d399','#10796b','#f0c674'],
+  };
+  function ring(radius,amp,colour,phase,lw,alpha){
+    x.beginPath();
+    for(let a=0;a<=Math.PI*2+.02;a+=.03){
+      // layered sines make the deformation look organic rather than mechanical
+      const n=Math.sin(a*3+t*1.6+phase)*.5
+             +Math.sin(a*5-t*1.1+phase)*.32
+             +Math.sin(a*7+t*.7+phase)*.18;
+      const r=radius+n*amp;
+      const px=cx+Math.cos(a)*r, py=cy+Math.sin(a)*r;
+      a===0?x.moveTo(px,py):x.lineTo(px,py);
+    }
+    x.closePath();
+    x.strokeStyle=colour; x.globalAlpha=alpha; x.lineWidth=lw*DPR(); x.stroke();
+    x.globalAlpha=1;
+  }
+  (function loop(){
+    t+=.016;
+    level+=(target-level)*.14;                     // smooth the audio meter
+    const pal=PALETTE[mode], idle=mode==='idle';
+    const pulse=idle?(Math.sin(t*1.1)*.5+.5)*.13:level;
+    const amp=base*(.10+pulse*.85);
+
+    x.clearRect(0,0,w,h);
+
+    // glow core
+    const g=x.createRadialGradient(cx,cy,0,cx,cy,base*(1.5+pulse));
+    g.addColorStop(0,pal[0]+'44'); g.addColorStop(.45,pal[1]+'1c'); g.addColorStop(1,'transparent');
+    x.fillStyle=g; x.fillRect(0,0,w,h);
+
+    x.shadowBlur=34*DPR(); x.shadowColor=pal[0];
+    ring(base*(1+pulse*.30),amp,      pal[0],0,   2.0,.95);
+    x.shadowColor=pal[1];
+    ring(base*(.80+pulse*.24),amp*.78,pal[1],2.1, 1.5,.7);
+    x.shadowColor=pal[2];
+    ring(base*(.60+pulse*.18),amp*.55,pal[2],4.2, 1.2,.5);
+    x.shadowBlur=0;
+
+    // inner disc
+    const core=x.createRadialGradient(cx,cy,0,cx,cy,base*.42);
+    core.addColorStop(0,pal[0]+(idle?'26':'55')); core.addColorStop(1,'transparent');
+    x.fillStyle=core; x.beginPath(); x.arc(cx,cy,base*.42,0,7); x.fill();
+
+    // The lemniscate at the centre — the logo, traced live. A point sweeping
+    // the infinity path leaves a comet trail whose length grows with volume.
+    const R=base*.34, tail=26+Math.round(pulse*40);
+    x.lineWidth=(1.6+pulse*2.4)*DPR(); x.shadowBlur=14*DPR(); x.shadowColor=pal[0];
+    for(let k=0;k<tail;k++){
+      const u=t*1.25-k*.045;
+      const d=1+Math.sin(u)*Math.sin(u);
+      const X=cx+(R*Math.cos(u))/d, Y=cy+(R*Math.sin(u)*Math.cos(u))/d;
+      const u2=u-.045, d2=1+Math.sin(u2)*Math.sin(u2);
+      const X2=cx+(R*Math.cos(u2))/d2, Y2=cy+(R*Math.sin(u2)*Math.cos(u2))/d2;
+      x.beginPath(); x.moveTo(X,Y); x.lineTo(X2,Y2);
+      x.strokeStyle=pal[k%2?1:0]; x.globalAlpha=(1-k/tail)*.9; x.stroke();
+    }
+    x.globalAlpha=1; x.shadowBlur=0;
+
+    // orbiting motes — speed tracks how loud it is
+    for(let i=0;i<3;i++){
+      const a=t*(.5+i*.28)+i*2.1, r=base*(1.28+pulse*.34);
+      x.beginPath(); x.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,(2.4+pulse*4)*DPR(),0,7);
+      x.fillStyle=pal[i%3]; x.globalAlpha=.85; x.fill(); x.globalAlpha=1;
+    }
+    requestAnimationFrame(loop);
+  })();
+
+  return {
+    set(m){mode=m;},
+    feed(v){target=Math.min(1,v);},
+    get mode(){return mode;}
+  };
+})();
+
+/* ══════════ console ══════════ */
+const QUICK=[
+  ['Top stories','what actually matters, last 24h','get_top_stories',{scope:'both',limit:8}],
+  ['Big in Nigeria','most-covered stories today','get_top_stories',{scope:'nigeria',limit:8}],
+  ['AI news','TechCrunch · Verge · MIT','get_tech_news',{focus:'ai',limit:8}],
+  ['Tech industry','the whole sector','get_tech_news',{focus:'all',limit:8}],
+  ['Daily briefing','Nigeria + world + markets','get_daily_briefing',{limit_per_section:4}],
+  ['Trending','what Nigeria is searching, and why','get_trending',{region:'NG'}],
+  ['Nigeria news','11 local outlets, newest first','get_nigeria_news',{limit:8}],
+  ['World news','BBC · Al Jazeera · NYT','get_world_news',{limit:8}],
+  ['Markets','crypto + naira','get_markets',{}],
+  ['Prayer times','today','get_prayer_times',{}],
+  ["What's new",'your watched topics','whats_new',{}],
+  ['Verify a claim','type it in the box below','__hint',{}],
+];
+const ARG_OF={verify_claim:'claim',get_news_about:'topic',search_web:'query',wikipedia_summary:'topic',
+  get_weather:'city',watch_topic:'topic',remember:'fact',save_note:'content',add_reminder:'text',
+  calculate:'expression',fetch_url:'url',open_app:'name',get_headlines_by_category:'category',
+  recall:'query',list_notes:'query'};
+let TOOLS=new Set();
+
+function route(text){
+  const t=text.trim(); if(!t) return null;
+  const low=t.toLowerCase();
+  const m=t.match(/^([a-z_]{4,})\s*(.*)$/);
+  if(m&&TOOLS.has(m[1])){
+    const rest=m[2].trim();
+    return rest?[m[1],{[ARG_OF[m[1]]||'query']:rest}]:[m[1],{}];
+  }
+  if(/^(is it true|i heard|is this real|someone (sent|forwarded))/.test(low)||low.includes('is it true'))
+    return ['verify_claim',{claim:t}];
+  if(/^(brief|catch me up|what did i miss|good morning)/.test(low))
+    return ['get_daily_briefing',{limit_per_section:4}];
+  // "important / big / matters" is a different question from "latest".
+  if(/\b(important|big(gest)?|matters?|major|headline story|top stor)/.test(low))
+    return ['get_top_stories',{scope:/\bnigeria|naija|local\b/.test(low)?'nigeria':'both',limit:8}];
+  if(/\b(a\.?i\.?|artificial intelligence|openai|anthropic|machine learning)\b/.test(low))
+    return ['get_tech_news',{focus:'ai',limit:8}];
+  if(/\b(tech|technology|startup|silicon valley)\b/.test(low))
+    return ['get_tech_news',{focus:'all',limit:8}];
+  if(low.includes('trending'))            return ['get_trending',{region:'NG'}];
+  if(/\bweather\b/.test(low))             return ['get_weather',{city:t.replace(/.*weather\s*(in|for)?\s*/i,'').trim()}];
+  if(/\b(naira|dollar|crypto|bitcoin|market)\b/.test(low)) return ['get_markets',{}];
+  if(/\bprayer\b/.test(low))              return ['get_prayer_times',{}];
+  if(/^watch\s+/i.test(t))                return ['watch_topic',{topic:t.replace(/^watch\s+/i,'')}];
+  if(/^(remember|note that)\s+/i.test(t)) return ['remember',{fact:t.replace(/^(remember|note that)\s+/i,'')}];
+  if(/\b(nigeria|nigerian|lagos|abuja)\b/.test(low)&&/\bnews\b/.test(low)) return ['get_nigeria_news',{limit:8}];
+  if(/^(news|headlines)\b/.test(low))     return ['get_world_news',{limit:8}];
+  if(/^(who|what) (is|was|are)\b/.test(low))
+    return ['wikipedia_summary',{topic:t.replace(/^(who|what) (is|was|are)\s+/i,'').replace(/\?$/,'')}];
+  if(/^\s*[-+(]?[\d.]+\s*[-+*/^]/.test(t)) return ['calculate',{expression:t}];
+  return ['get_news_about',{topic:t,within_days:7,limit:8}];
+}
+function render(text){
+  const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const inline=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+    .replace(/(^|[\s(])_([^_]+)_/g,'$1<i>$2</i>')
+    .replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+  let html='',open=false,n=0;
+  for(const raw of text.split('\n')){
+    const line=raw.trim(); if(!line) continue;
+    if(/^#{1,3}\s/.test(line)){
+      if(open){html+='</div>';open=false}
+      html+='<h3>'+inline(line.replace(/^#{1,3}\s/,''))+'</h3>'; continue;
+    }
+    if(/^\*\*(Widely reported|Reported by a few|Thinly sourced|No coverage)/.test(line)){
+      const cls=line.includes('Widely')?'v-good':line.includes('Thinly')?'v-bad':'v-warn';
+      html+='<div class="verdict '+cls+'">'+inline(line.replace(/\*\*/g,''))+'</div>'; continue;
+    }
+    if(/^_.*_$/.test(line)){html+='<div class="meta">'+inline(line.replace(/^_|_$/g,''))+'</div>';continue}
+    if(/^\d+\.\s|^[-*]\s/.test(line)){
+      const d='style="animation-delay:'+(Math.min(n++,14)*.035)+'s"';
+      html+=(open?'</div>':'')+'<div class="item" '+d+'>';open=true;
+      html+='<div>'+inline(line.replace(/^\d+\.\s|^[-*]\s/,''))+'</div>'; continue;
+    }
+    html+='<div>'+inline(line)+'</div>';
+  }
+  if(open)html+='</div>';
+  return html||'<span class="muted">(no output)</span>';
+}
+async function run(name,args){
+  const out=$('#out');
+  out.innerHTML='<span class="dots"><span></span><span></span><span></span></span> <span class="muted">working…</span>';
+  $('#run').disabled=true;
+  try{
+    const res=await fetch('/api/call',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,args})});
+    const data=await res.json();
+    out.innerHTML=data.error?'<div class="verdict v-bad">'+data.error+'</div>':render(data.text||'');
+  }catch(e){ out.innerHTML='<div class="verdict v-bad">Could not reach Salaam: '+e.message+'</div>'; }
+  finally{ $('#run').disabled=false; }
+}
+$('#run').onclick=()=>{const p=route($('#q').value); if(p) run(p[0],p[1]);};
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter')$('#run').click()});
+
+// Weather for anywhere. Blank falls back to the home city from .env.
+$('#wxgo').onclick=()=>run('get_weather',{city:$('#wx').value.trim()});
+$('#wx').addEventListener('keydown',e=>{if(e.key==='Enter')$('#wxgo').click()});
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t===tab));
+    $('#tab-console').classList.toggle('hidden',tab.dataset.tab!=='console');
+    $('#tab-voice').classList.toggle('hidden',tab.dataset.tab!=='voice');
+  };
+});
+(async()=>{
+  const grid=$('#quick');
+  QUICK.forEach(([title,sub,tool,args],i)=>{
+    const b=document.createElement('button'); b.className='card';
+    b.style.animation='rise .5s both'; b.style.animationDelay=(i*.045)+'s';
+    b.innerHTML='<b>'+title+'</b><small>'+sub+'</small>';
+    b.onclick = tool==='__hint'
+      ? ()=>{ $('#q').focus(); $('#q').value='is it true that '; }
+      : ()=>run(tool,args);
+    grid.appendChild(b);
+  });
+  try{
+    const m=await(await fetch('/api/tools')).json();
+    TOOLS=new Set(m.tools.map(t=>t.name));
+    $('#tagline').textContent=m.tools.length+' tools · '+m.city+' · for '+m.owner;
+  }catch(e){ $('#tagline').textContent='offline'; }
+})();
+
+/* ══════════ voice ══════════ */
+let room=null, ac=null, meters=[];
+const log=m=>{const d=document.createElement('div');d.textContent=m;$('#vlog').appendChild(d);$('#vlog').scrollTop=1e6;};
+const state=(txt,cls)=>{$('#vstate').textContent=txt;$('#vstate').className='vstate '+(cls||'');};
+function caption(who,text){
+  const c=$('#caption');
+  c.innerHTML='<span class="who">'+who+'</span>'+text;
+  c.classList.add('on');
+}
+
+/* Route a remote track so it is BOTH audible and analysable.
+
+   Chrome will not emit audio from a MediaStreamAudioSourceNode built on a
+   WebRTC track unless that same stream is also attached to a media element —
+   but if the element is left unmuted you get the stream twice. So: attach a
+   MUTED element to satisfy the browser, then play the real audio through the
+   WebAudio graph, which is also what feeds the orb.
+
+   Getting this wrong is silent, not noisy, which is exactly why it took a
+   while to find. */
+function meter(track,which,audible){
+  if(!ac) ac=new (window.AudioContext||window.webkitAudioContext)();
+  const stream=new MediaStream([track]);
+  const src=ac.createMediaStreamSource(stream);
+  const an=ac.createAnalyser(); an.fftSize=512; an.smoothingTimeConstant=.75;
+  src.connect(an);
+  if(audible) an.connect(ac.destination);   // the only path that makes sound
+  const buf=new Uint8Array(an.frequencyBinCount);
+  const m={which,an,buf,level:0};
+  meters.push(m);
+  return m;
+}
+(function pump(){
+  let speaking=0,listening=0;
+  for(const m of meters){
+    m.an.getByteFrequencyData(m.buf);
+    let sum=0; for(let i=0;i<m.buf.length;i++) sum+=m.buf[i];
+    m.level=(sum/m.buf.length)/128;                    // ~0..1
+    if(m.which==='agent') speaking=Math.max(speaking,m.level);
+    else                  listening=Math.max(listening,m.level);
+  }
+  if(room){
+    if(speaking>.055){ Orb.set('speaking'); Orb.feed(speaking*1.5); state('Salaam is speaking','speak'); }
+    else if(listening>.075){ Orb.set('listening'); Orb.feed(listening*1.5); state('listening…','live'); }
+    else { Orb.set('listening'); Orb.feed(0); state('connected — just talk','live'); }
+  }
+  requestAnimationFrame(pump);
+})();
+
+/* A visible checklist, so a failure says WHERE it failed instead of nothing. */
+const STEPS=['sdk','token','mic','room','agent','audio','sound'];
+const LABEL={sdk:'Voice SDK loaded',token:'Access token',mic:'Microphone',
+  room:'Room connected',agent:'Salaam joined',audio:'Audio stream',sound:'Sound playing'};
+function step(k,ok,note){
+  const el=document.getElementById('s-'+k); if(!el) return;
+  el.className='chk '+(ok===null?'wait':ok?'ok':'bad');
+  el.querySelector('.t').textContent=LABEL[k]+(note?' — '+note:'');
+}
+function buildChecks(){
+  $('#checks').innerHTML=STEPS.map(k=>
+    '<div class="chk" id="s-'+k+'"><i></i><span class="t">'+LABEL[k]+'</span></div>').join('');
+}
+
+async function connect(){
+  $('#vgo').disabled=true; state('connecting…');
+  buildChecks(); $('#checks').classList.remove('hidden');
+  try{
+    const LK=window.LivekitClient;
+    if(!LK){
+      step('sdk',false,'blocked or offline');
+      state('voice SDK did not load','err');
+      log('The LiveKit script is served from a CDN. An ad-blocker or no internet will block it.');
+      $('#vgo').disabled=false; return;
+    }
+    step('sdk',true);
+
+    const info=await(await fetch('/api/voice-token')).json();
+    if(info.error){ step('token',false,info.error); state('no token','err'); $('#vgo').disabled=false; return; }
+    step('token',true);
+
+    // Create + resume the AudioContext inside the click gesture, before any
+    // awaits — browsers only honour resume() while the gesture is live.
+    if(!ac) ac=new (window.AudioContext||window.webkitAudioContext)();
+    if(ac.state==='suspended'){ try{ await ac.resume(); }catch(e){} }
+
+    room=new LK.Room({adaptiveStream:true,dynacast:true});
+
+    room.on(LK.RoomEvent.TrackSubscribed,(track)=>{
+      if(track.kind!=='audio') return;
+      step('audio',true);
+      try{
+        // Muted element: satisfies Chrome's stream requirement without
+        // double-playing. Real audio comes out of the WebAudio graph.
+        const el=track.attach();
+        el.muted=true; el.autoplay=true; el.playsInline=true;
+        $('#sink').appendChild(el);
+        el.play().catch(()=>{});
+        meter(track.mediaStreamTrack,'agent',true);
+        step('sound',true,'via audio engine');
+      }catch(e){
+        // If WebAudio is unavailable, fall back to plain element playback.
+        // No orb reaction, but you can hear it — always the better trade.
+        const el=track.attach();
+        el.muted=false; el.autoplay=true; el.playsInline=true;
+        $('#sink').appendChild(el);
+        el.play().catch(()=>step('sound',false,'autoplay blocked — click the page'));
+        step('sound',true,'fallback mode');
+        log('Visualiser off: '+e.message);
+      }
+      log('Salaam is connected. Say hello.');
+    });
+    room.on(LK.RoomEvent.ParticipantConnected,p=>{ step('agent',true); log('Salaam joined ('+p.identity+')'); });
+    room.on(LK.RoomEvent.Disconnected,()=>teardown());
+    room.on(LK.RoomEvent.TranscriptionReceived,segs=>{
+      segs.forEach(s=>{
+        if(!s.final) return;
+        const mine=!s.participantInfo||s.participantInfo.identity?.startsWith('user');
+        caption(mine?'you':'salaam',s.text);
+        log((mine?'you: ':'salaam: ')+s.text);
+      });
+    });
+
+    await room.connect(info.url,info.token);
+    step('room',true,info.room);
+
+    try{
+      await room.localParticipant.setMicrophoneEnabled(true);
+      step('mic',true);
+      const mic=room.localParticipant.getTrackPublication(LK.Track.Source.Microphone);
+      if(mic?.track) meter(mic.track.mediaStreamTrack,'me',false);
+    }catch(e){
+      step('mic',false,'permission denied');
+      log('Microphone blocked — you will hear Salaam but it cannot hear you.');
+    }
+
+    // The agent may already have been in the room before our handler attached.
+    // Give it a generous window: a cold worker has to spin up a job process,
+    // and warning at 12s produced a false "no agent" line seconds before it
+    // actually arrived.
+    if(room.remoteParticipants && room.remoteParticipants.size) step('agent',true);
+    else setTimeout(()=>{
+      if(room && room.remoteParticipants.size===0){
+        step('agent',false,'no agent — is `main.py voice-dev` running?');
+        log('No agent joined after 30s. Start it: python main.py voice-dev');
+      }
+    },30000);
+
+    Orb.set('listening'); state('connected — just talk','live');
+    log('Room '+info.room);
+    $('#vgo').classList.add('hidden'); $('#vstop').classList.remove('hidden');
+  }catch(e){
+    state('failed: '+e.message,'err'); log('Error: '+e.message);
+    $('#vgo').disabled=false;
+  }
+}
+function teardown(){
+  meters=[]; room=null;
+  Orb.set('idle'); Orb.feed(0);
+  state('tap the orb to begin');
+  $('#caption').classList.remove('on');
+  $('#sink').innerHTML='';
+  $('#checks').classList.add('hidden');
+  $('#vgo').disabled=false; $('#vgo').classList.remove('hidden'); $('#vstop').classList.add('hidden');
+}
+$('#vgo').onclick=connect;
+$('#orb').onclick=()=>{ if(!room) connect(); };
+$('#vstop').onclick=async()=>{ if(room) await room.disconnect(); teardown(); };
+</script>
+</body>
+</html>

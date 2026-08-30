@@ -1,0 +1,35 @@
+[project]
+name = "salaam-assistant"
+version = "0.2.0"
+description = "Salaam — a personal AI assistant: news, web, weather, markets, memory and voice"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    # mcp 2.0 removed mcp.server.fastmcp entirely, and livekit-agents pins
+    # <2 anyway — so pin it here rather than let a fresh install break.
+    "mcp>=1.9,<2",
+    "httpx",
+    "python-dotenv",
+    "psutil",
+    # Windows has no system IANA timezone database.
+    "tzdata; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+# Install only if you want to talk to Salaam. Speech, turn detection and VAD
+# all run through LiveKit Inference server-side, so no local model plugins
+# (and no 460MB of ONNX weights) are needed.
+voice = [
+    "livekit-agents>=1.6",
+]
+
+[project.scripts]
+salaam = "server:main"
+salaam_voice = "agent_salaam:dev"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["salaam"]
