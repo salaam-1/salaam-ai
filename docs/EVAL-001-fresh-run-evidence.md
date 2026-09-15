@@ -1,5 +1,7 @@
 ﻿# EVAL-001 Fresh Run Evidence
 
+> Evidence-status note: These are self-run reproductions performed during EVAL-001 recovery. They preserve exact inputs and outputs and are useful corroborating diagnostics, but they are not qualifying real-use incidents under the failure-landscape evidence rule because they do not come from independent prior user sessions or documented incidents.
+
 ## FEC-01 — Current-time request routed incorrectly
 
 - Date: 15 Sep 2026
