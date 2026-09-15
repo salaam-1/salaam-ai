@@ -1,4 +1,4 @@
-﻿# Salaam — Blacksmith EVAL-001 Failure-Landscape Ledger
+# Salaam — Blacksmith EVAL-001 Failure-Landscape Ledger
 
 Prepared: 2026-09-14
 Blacksmith task: **Reconstruct the failure landscape from real usage**
@@ -77,7 +77,7 @@ This is an evidence gap, not a reason to invent additional incidents.
 
 ## Tool-orchestration evidence gap
 
-EVAL-001 is intended to establish the failure landscape for Salaam's orchestration behavior. The currently recovered material is heavily weighted toward the voice pipeline: **17 of the 18 original inventory rows were voice/startup/frontend/provider evidence, while the only orchestration-specific row was S18 and it lacks an exact request/result pair.**
+EVAL-001 is intended to establish the failure landscape for Salaam's orchestration behavior. The currently recovered material is heavily weighted toward the voice pipeline: **16 of the 17 current inventory rows are voice/startup/frontend/provider evidence, while the only orchestration-specific row is S18 and it lacks an exact request/result pair.**
 
 The current ledger therefore does not yet provide enough real orchestration incidents to build a defensible orchestration baseline.
 
@@ -85,12 +85,30 @@ The correct next step is to recover exact historical orchestration examples from
 
 ## Required category coverage
 
-- **Wrong tool used:** reported as a real Salaam pattern in S18, but the exact request/result pair is not preserved. Candidate only.
+- **Wrong tool used:** now supported by fresh evidence in FEC-01, FEC-02, B04, and V05, each with an exact request and observed result.
 - **No tool used when none fits:** not genuinely observed in the available evidence. Do not fabricate one.
 - **Tool failing partway:** not genuinely observed in the available evidence. Do not fabricate one.
 - **Two tools disagreeing:** not genuinely observed in the available evidence. Do not fabricate one.
 - **Several tools combined:** Salaam has a multi-tool architecture, but no real multi-tool failure run is preserved. Architecture alone is not an incident.
 
+
+## Fresh evidence recovered after initial review
+
+A bounded fresh-evidence pass recovered four distinct Console/application-router failures that were not represented in the original S01-S18 inventory:
+
+- **FEC-01 — Current-time request routed incorrectly:** `What time is it in Lagos?` did not reach a current-time route. A repeat returned news instead of the requested time. The current `webapp.html` routing does not contain a current-time route and unmatched requests fall through to `get_news_about`.
+- **FEC-02 — Weather request handled incorrectly:** `What is the weather in Kano?` passed the question text as the city value and returned no weather result.
+- **B04 — Latest Nigeria headlines routed to the wrong result:** `latest Nigeria headlines` fell through to a Wikipedia-style summary instead of returning current Nigeria headlines.
+- **V05 — Combined intent was partially dropped:** `What is happening in Nigeria and what is Bitcoin doing?` selected the markets path because `bitcoin` was present and silently dropped the Nigeria-news intent.
+
+These are distinct observed router/application failures from fresh runs. They are stronger evidence for the orchestration failure landscape than the earlier S18 candidate because each has an exact request and observed result.
+
+Historical recovery also confirmed two voice incidents:
+
+- **H01 — No-response voice session:** the historical session contained `Hello.`, `Briefly.`, and `Brief me.` and produced no confirmed assistant response.
+- **H02 — Voice latency symptom:** a later historical run contained `Hello.` and `How are you doing?`; speech was transcribed and voice worked, but the observed result was that latency was too high. No exact latency measurement was preserved.
+
+The recovered evidence therefore strengthens the failure landscape, but it still does **not** establish 15 qualifying situations. The ledger deliberately keeps the evidence ceiling explicit rather than counting duplicate symptoms, controls, hypotheses, or unrecoverable historical claims as separate incidents.
 ## Main confirmed failure pattern
 
 The strongest confirmed voice pattern is:
@@ -113,7 +131,7 @@ Possible causes mentioned in the conversation include Silero VAD, local memory p
 1. Several real voice failures/symptoms are preserved with their original requests and observed outcomes.
 2. Controls show that the local server, worker startup, room connection, and browser audio setup could succeed in the relevant runs.
 3. Historical frontend and provider failure modes are preserved separately from current-run evidence.
-4. The previously reported orchestration problem is real as a user-reported pattern, but its exact request/result evidence has not yet been recovered.
+4. Fresh Console/application-router runs now provide exact request/result evidence for several orchestration failures, including incorrect routing, malformed parameter handling, wrong-result fallback, and partial intent dropping.
 5. The currently available evidence is insufficient to claim that the 15-situation acceptance criterion has been met.
 
-The next evidence-recovery step should therefore focus on exact historical orchestration examples rather than padding this ledger with controls or hypotheses.
+The next step should use the recovered orchestration failures as the starting point for the baseline, while keeping the 15-situation evidence gap explicit rather than padding the ledger with controls, duplicates, or hypotheses.
