@@ -52,6 +52,7 @@ The task outcome is raw material for the evaluation set, not necessarily the fin
 | S07 | `Hello.` | Salaam should recognize the utterance, complete the turn, generate an answer, and speak it. | The browser displayed the utterance. No assistant response is shown in the preserved record. | Publish Salaam Safely; room `salaam-bf24db14`, agent `AJ_LPSxEw5verp8`. | Confirmed | Qualifying voice incident. |
 | S08 | `Briefly.` | Salaam should return a short spoken answer. | The browser displayed the utterance, but the session record says `NO RESPONSE`. | Publish Salaam Safely; same correlated voice session. | Confirmed | Qualifying voice incident. |
 | S09 | `Brief me.` | Salaam should begin a brief spoken response. | The browser displayed the utterance, but the session record says `NO RESPONSE`. | Publish Salaam Safely; same correlated voice session. | Confirmed | Qualifying voice incident. |
+| S10 | Complete `Hello.` → `Briefly.` → `Brief me.` sequence | Each utterance should receive its own response. | This is the same voice session already represented by S07–S09, not a separate incident. | Publish Salaam Safely; same correlated voice session. | Excluded | Duplicate of S07–S09; retained as an exclusion so the original numbering gap is explicit. |
 | S11 | Speaking while the voice worker showed only `registered worker` | The worker should emit post-registration STT, turn, LLM, TTS, or error activity. | The conversation reports no visible post-registration activity in the terminal. The raw terminal output is not preserved. | Publish Salaam Safely; terminal diagnosis. | Confirmed report / incomplete raw log | Retain as evidence, but distinguish the reported observation from the missing raw log. |
 | S12 | `Hello.` and `How are you doing?` in a later run | Salaam should answer promptly after speech is transcribed. | Speech was transcribed, but the interaction was described as `voice works, but latency is too high`. Exact delay was not recorded. | Publish Salaam Safely; room `salaam-b0ce158d`, agent `AJ_wqJaXusFnuKf`. | Confirmed symptom | Qualifying symptom, with latency measurement absent. |
 | S13 | `Hello Salaam.` as a controlled diagnostic | The terminal should show STT, turn, LLM, TTS, error, or timeout activity after speech. | The requested diagnostic is preserved, but no resulting terminal output is preserved. | Publish Salaam Safely; diagnostic instruction. | Proposed-no-result | Excluded until the result is recovered. |
@@ -77,7 +78,7 @@ This is an evidence gap, not a reason to invent additional incidents.
 
 ## Tool-orchestration evidence gap
 
-EVAL-001 is intended to establish the failure landscape for Salaam's orchestration behavior. The currently recovered material is heavily weighted toward the voice pipeline: **16 of the 17 current inventory rows are voice/startup/frontend/provider evidence, while the only orchestration-specific row is S18 and it lacks an exact request/result pair.**
+EVAL-001 is intended to establish the failure landscape for Salaam's orchestration behavior. The currently recovered material is heavily weighted toward the voice pipeline. Fresh evidence recovered after the initial review now adds four exact Console/application-router runs (FEC-01, FEC-02, FEC-03/B04, and FEC-04/V05). These provide recoverable orchestration evidence, but they do not by themselves raise the total to 15 qualifying situations.
 
 The current ledger therefore does not yet provide enough real orchestration incidents to build a defensible orchestration baseline.
 
@@ -85,11 +86,11 @@ The correct next step is to recover exact historical orchestration examples from
 
 ## Required category coverage
 
-- **Wrong tool used:** now supported by fresh evidence in FEC-01, FEC-02, B04, and V05, each with an exact request and observed result.
+- **Incorrect routing / wrong result:** supported by fresh evidence in FEC-01, FEC-02, and FEC-03/B04, each with an exact request and observed result. The evidence shows incorrect routing or result handling; it does not prove that every case invoked a semantically wrong tool.
 - **No tool used when none fits:** not genuinely observed in the available evidence. Do not fabricate one.
 - **Tool failing partway:** not genuinely observed in the available evidence. Do not fabricate one.
 - **Two tools disagreeing:** not genuinely observed in the available evidence. Do not fabricate one.
-- **Several tools combined:** Salaam has a multi-tool architecture, but no real multi-tool failure run is preserved. Architecture alone is not an incident.
+- **Several tools combined:** FEC-04/V05 is a combined-intent request, but the observed behavior partially handled only the Bitcoin/markets intent and dropped the Nigeria-news intent. This is evidence of partial combined-intent routing, not proof that several tools successfully ran together.
 
 
 ## Fresh evidence recovered after initial review
@@ -97,9 +98,9 @@ The correct next step is to recover exact historical orchestration examples from
 A bounded fresh-evidence pass recovered four distinct Console/application-router failures that were not represented in the original S01-S18 inventory:
 
 - **FEC-01 — Current-time request routed incorrectly:** `What time is it in Lagos?` did not reach a current-time route. A repeat returned news instead of the requested time. The current `webapp.html` routing does not contain a current-time route and unmatched requests fall through to `get_news_about`.
-- **FEC-02 — Weather request handled incorrectly:** `What is the weather in Kano?` passed the question text as the city value and returned no weather result.
-- **B04 — Latest Nigeria headlines routed to the wrong result:** `latest Nigeria headlines` fell through to a Wikipedia-style summary instead of returning current Nigeria headlines.
-- **V05 — Combined intent was partially dropped:** `What is happening in Nigeria and what is Bitcoin doing?` selected the markets path because `bitcoin` was present and silently dropped the Nigeria-news intent.
+- **FEC-02 — Weather request handled incorrectly:** `What is the weather in Kano?` reached the weather branch, but the router's city extraction left the trailing `?` in the city value, producing `Kano?` and returning no weather result.
+- **B04 — Latest Nigeria headlines routed to the wrong result:** `latest Nigeria headlines` did not match the dedicated Nigeria-headlines branch because the request lacked the expected `news` keyword. It fell through to `get_news_about` rather than returning the dedicated Nigeria-headlines result.
+- **V05 — Combined intent was partially dropped:** `What is happening in Nigeria and what is Bitcoin doing?` matched the Bitcoin/markets path and returned markets information, while the Nigeria-news intent was silently dropped. This is partial combined-intent routing rather than evidence that multiple tools were successfully combined.
 
 These are distinct observed router/application failures from fresh runs. They are stronger evidence for the orchestration failure landscape than the earlier S18 candidate because each has an exact request and observed result.
 
@@ -135,3 +136,10 @@ Possible causes mentioned in the conversation include Silero VAD, local memory p
 5. The currently available evidence is insufficient to claim that the 15-situation acceptance criterion has been met.
 
 The next step should use the recovered orchestration failures as the starting point for the baseline, while keeping the 15-situation evidence gap explicit rather than padding the ledger with controls, duplicates, or hypotheses.
+
+## Ticket-owner decision
+EVAL-001 remains open because the available evidence still does not establish the required 15 qualifying situations.
+
+The ledger will not pad the count with duplicate incidents, controls, hypotheses, or unrecoverable historical claims. The recovered fresh runs will be retained as baseline evidence, and further evidence recovery or newly observed real usage should continue if additional qualifying situations can be obtained.
+
+If the remaining evidence cannot be recovered, the 15-situation acceptance gap remains explicit and the final acceptance decision belongs to the task owner / Blacksmith process rather than being inferred from this ledger.
