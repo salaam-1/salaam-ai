@@ -78,7 +78,7 @@ This is an evidence gap, not a reason to invent additional incidents.
 
 ## Tool-orchestration evidence gap
 
-EVAL-001 is intended to establish the failure landscape for Salaam's orchestration behavior. The currently recovered material is heavily weighted toward the voice pipeline. Fresh evidence recovered after the initial review now adds four exact Console/application-router runs (FEC-01, FEC-02, FEC-03/B04, and FEC-04/V05). These provide recoverable orchestration evidence, but they do not by themselves raise the total to 15 qualifying situations.
+EVAL-001 is intended to establish the failure landscape for Salaam's orchestration behavior. The currently recovered material is heavily weighted toward the voice pipeline. Fresh evidence recovered after the initial review adds four exact Console/application-router reproductions (FEC-01, FEC-02, FEC-03/B04, and FEC-04/V05). They are useful corroboration of current router behavior, but they were self-run during evidence recovery rather than recovered from independent user sessions, so they do not qualify as real-usage situations under this ledger's own evidence rule.
 
 The current ledger therefore does not yet provide enough real orchestration incidents to build a defensible orchestration baseline.
 
@@ -86,11 +86,11 @@ The correct next step is to recover exact historical orchestration examples from
 
 ## Required category coverage
 
-- **Incorrect routing / wrong result:** supported by fresh evidence in FEC-01, FEC-02, and FEC-03/B04, each with an exact request and observed result. The evidence shows incorrect routing or result handling; it does not prove that every case invoked a semantically wrong tool.
+- **Wrong tool used:** not genuinely observed in recoverable real usage. FEC-01, FEC-02, and FEC-03/B04 are self-run reproductions retained as corroborating diagnostics, not qualifying incidents; they do not establish that a real user request selected the wrong tool.
 - **No tool used when none fits:** not genuinely observed in the available evidence. Do not fabricate one.
 - **Tool failing partway:** not genuinely observed in the available evidence. Do not fabricate one.
 - **Two tools disagreeing:** not genuinely observed in the available evidence. Do not fabricate one.
-- **Several tools combined:** FEC-04/V05 is a combined-intent request, but the observed behavior partially handled only the Bitcoin/markets intent and dropped the Nigeria-news intent. This is evidence of partial combined-intent routing, not proof that several tools successfully ran together.
+- **Several tools combined:** not genuinely observed in recoverable real usage. FEC-04/V05 was a self-run combined-intent reproduction in which only the market path was observed; it is not evidence that several tools successfully ran together. Do not fabricate one.
 
 
 ## Fresh evidence recovered after initial review
@@ -102,7 +102,7 @@ A bounded fresh-evidence pass recovered four distinct Console/application-router
 - **B04 — Latest Nigeria headlines routed to the wrong result:** `latest Nigeria headlines` did not match the dedicated Nigeria-headlines branch because the request lacked the expected `news` keyword. It fell through to `get_news_about` rather than returning the dedicated Nigeria-headlines result.
 - **V05 — Combined intent was partially dropped:** `What is happening in Nigeria and what is Bitcoin doing?` matched the Bitcoin/markets path and returned markets information, while the Nigeria-news intent was silently dropped. This is partial combined-intent routing rather than evidence that multiple tools were successfully combined.
 
-These are distinct observed router/application failures from fresh runs. They are stronger evidence for the orchestration failure landscape than the earlier S18 candidate because each has an exact request and observed result.
+These are distinct observed router/application failures from fresh self-run reproductions. They are useful corroboration of current application behavior, but they are not qualifying real-use incidents under the ledger's evidence rule because the request strings came from the reviewer conducting the recovery pass and are preserved only in these repository documents, not in an independent user session or prior incident record. They therefore cannot replace the unrecovered S18 real-usage evidence or be counted toward the 15-situation criterion.
 
 Historical recovery also confirmed two voice incidents:
 
